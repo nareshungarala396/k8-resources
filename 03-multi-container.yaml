@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: roboshop-containers
+  namespace: roboshop
+  labels:
+    project: roboshop
+    environment: dev
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+  - name: alamalinux
+    image: almalinux:9
+    CMD ["sleep", "1000"]
