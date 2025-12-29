@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ebs-static
+spec:
+  capacity:
+    storage: 5Gi
+     # Specifies the capacity of the volume
+  accessModes:
+    - ReadWriteOnce # Can be mounted as read-write by a single Node
+  persistentVolumeReclaimPolicy: Retain # Retains data even after the PVC is deleted
+  csi:
+    driver: ebs.csi.aws.com
+    fsType: ext4
+    volumeHandle:
+---
+apiVersion: v1
+kind: persistentVolumeClaim
+metadata:
+  name: ebs-static
+spec:
+  storageClassName: ""
+  volumeName: ebs-static
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: v1
+kind: pod 
+metadata: 
+  name: nginx
+  labels:
+    purpose: ebs-static
+spec:
+    containers:
+    - name: nginx
+      image: nginx
+
+      volumeMounts:
+      - name: nginx-html
+        mountPath: /usr/share/nginx/html
+        
+    volumes:
+      - name: nginx-html
+        persistentVolumeClaim: 
+          ClaimName: ebs-static
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ebs-static
+spec:
+  type: LoadBalancer
+  selector:
+    purpose: ebs-static
+  port:
+    - protocal: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 3007
+
