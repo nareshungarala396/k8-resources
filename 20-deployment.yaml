@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       labels:
-        purpose: dp-demo
+        purpose: headless-svc-demo
         project: roboshop
     spec:
       containers:
